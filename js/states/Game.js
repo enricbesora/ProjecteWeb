@@ -181,6 +181,8 @@ clickButton: function(button) {
             this.plantLabel.fill = "white";
 
             this.currentSelection = button.plantData;
+
+            this.currentCost = button.plantData.cost;
         }
         else {
             this.plantLabel.fill = "red";
@@ -193,6 +195,7 @@ clickButton: function(button) {
 clearSelection: function() {
     this.plantLabel.text = '';
     this.currentSelection = null;
+    this.currentCost = null;
 
     this.buttons.forEach(function(button){
         button.alpha = 1;
@@ -228,6 +231,12 @@ createLandPatches: function() {
     }
 },
 plantPlant: function(patch) {
-    console.log('Plnat!' + patch.posX + " " + patch.posY)
+    console.log('Plnat!' + patch.posX + " " + patch.posY + this.currentSelection);
+    if (this.currentSelection != null && this.numSuns >= this.currentCost){
+        this.createPlant(patch.posX,patch.posY,this.currentSelection);
+        this.numSuns -= this.currentCost;
+        this.updateStats();
+        this.clearSelection();
+    }
 }
 };
