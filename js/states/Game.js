@@ -231,7 +231,6 @@ createLandPatches: function() {
     }
 },
 plantPlant: function(patch) {
-    console.log('Plnat!' + patch.posX + " " + patch.posY + this.currentSelection);
     if (this.currentSelection != null && this.numSuns >= this.currentCost){
         this.createPlant(patch.posX,patch.posY,this.currentSelection);
         this.numSuns -= this.currentCost;
