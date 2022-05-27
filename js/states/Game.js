@@ -2,6 +2,13 @@ var Veggies = Veggies || {};
 
 Veggies.GameState = {
 
+    /*Posicions Y:
+    Primera fila: 24
+    Segona fila: 74
+    Tercera fila: 124
+    Quarta fila: 174
+    Cinquena fila: 224
+    */
   init: function(currentLevel) {
     //keep track of the current level
     this.currentLevel = currentLevel ? currentLevel : 'level1';
@@ -10,6 +17,7 @@ Veggies.GameState = {
     this.HOUSE_X = 60;
     this.SUN_FREQUENCY = 5;
     this.SUN_VELOCITY = 50;
+    this.ENEMY_FREQUENCY = 7;
 
     //no gravity in a top-down game
     this.game.physics.arcade.gravity.y = 0;
@@ -38,7 +46,7 @@ Veggies.GameState = {
       velocity: -40
     };
 
-    this.zombie = new Veggies.Zombie(this, 300, 100, zombieData);
+    this.zombie = new Veggies.Zombie(this, 450, 224, zombieData);
     this.zombies.add(this.zombie);
 
 
@@ -50,16 +58,22 @@ Veggies.GameState = {
       animationFrames: [1, 2, 1, 0]
     };
 
-    this.plant = new Veggies.Plant(this, 100, 100, plantData);
+    this.plant = new Veggies.Plant(this, 100, 124, plantData);
     this.plants.add(this.plant);
 
     this.sunGenerationTimer = this.game.time.create(false);
     this.sunGenerationTimer.start();
     this.scheduleSunGeneration();
+
+    this.enemyGenerationTimer = this.game.time.create(false);
+    this.enemyGenerationTimer.start();
+    this.scheduleEnemyGeneration();
   },
   update: function() {
     this.game.physics.arcade.collide(this.plants, this.zombies, this.attackPlant, null, this);
     this.game.physics.arcade.collide(this.bullets, this.zombies, this.hitZombie, null, this);
+
+    
 
     this.zombies.forEachAlive(function(zombie){
       //zombies need to keep their speed
@@ -137,10 +151,18 @@ increaseSun: function(amount) {
     this.numSuns += amount;
     this.updateStats();
 },
+//Cada x temps es genera un sol i es torna a cridar a la mateixa funcio
 scheduleSunGeneration: function() {
     this.sunGenerationTimer.add(Phaser.Timer.SECOND * this.SUN_FREQUENCY, function() {
         this.generateRandomSun();
         this.scheduleSunGeneration();
+    }, this);
+},
+//Cada x temps es genera un enemic i es torna a cridar a la mateixa funcio
+scheduleEnemyGeneration: function(){
+    this.enemyGenerationTimer.add(Phaser.Timer.SECOND * this.ENEMY_FREQUENCY, function(){
+        this.generateRandomEnemy();
+        this.scheduleEnemyGeneration();
     }, this);
 },
 generateRandomSun: function() {
@@ -150,6 +172,44 @@ generateRandomSun: function() {
     var sun = this.createSun(x, y);
 
     sun.body.velocity.y = this.SUN_VELOCITY;
+},
+generateRandomEnemy: function(){
+    var x = 450;
+    var fila = 1 + 5 * Math.random();
+    fila = Math.round(fila);
+    var y = 0;
+    console.log(fila);
+    //De forma aleatoria s'escull en quina fila esta l'enemic, i segons la fila la y canvia
+    switch (fila) {
+        case 1:
+            y = 24;
+            break;
+        case 2:
+            y = 74;
+            break;
+        case 3:
+            y = 124;
+            break;
+        case 4:
+            y = 174;
+            break;
+        case 5:
+            y = 224;
+            break;
+        default:
+            y = 224;
+            break;
+    }
+    //TODO: Canviar enemic diferent
+    var zombieData = {
+        asset: 'zombie',
+        health: 2,
+        animationFrames: [0, 1, 2, 1],
+        attack: 0.1,
+        velocity: -40
+      };
+
+    var enemy = this.createZombie(x,y,zombieData);
 },
 createSun: function(x, y) {
     var newElement = this.suns.getFirstDead();
@@ -231,6 +291,7 @@ createLandPatches: function() {
     }
 },
 plantPlant: function(patch) {
+    console.log(patch.posY);
     if (this.currentSelection != null && this.numSuns >= this.currentCost){
         this.createPlant(patch.posX,patch.posY,this.currentSelection);
         this.numSuns -= this.currentCost;
