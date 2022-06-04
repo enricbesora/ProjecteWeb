@@ -1,6 +1,6 @@
-var Veggies = Veggies || {};
+var Game = Game || {};
 
-Veggies.GameState = {
+Game.GameState = {
 
     /*Posicions Y:
     Primera fila: 24
@@ -15,9 +15,9 @@ Veggies.GameState = {
 
     //constants
     this.HOUSE_X = 60;
-    this.SUN_FREQUENCY = 5;
+    this.SUN_FREQUENCY = 3;
     this.SUN_VELOCITY = 50;
-    this.ENEMY_FREQUENCY = 7;
+    this.ENEMY_FREQUENCY = 1;
 
     //no gravity in a top-down game
     this.game.physics.arcade.gravity.y = 0;
@@ -28,38 +28,20 @@ Veggies.GameState = {
 
     this.hitSound = this.add.audio('hit');
 
+    this.enemyCount = 0;
+    
     //group for game objects
     this.bullets = this.add.group();
-    this.plants = this.add.group();
-    this.zombies = this.add.group();
+    this.Arts = this.add.group();
+    this.enemys = this.add.group();
     this.suns = this.add.group();
+    
+    
+    this.numSuns = 10000;
 
-    this.numSuns = 100;
+    this.levelData = JSON.parse(this.game.cache.getText(this.currentLevel));
 
     this.createGui();
-
-    var zombieData = {
-      asset: 'zombie',
-      health: 2,
-      animationFrames: [0, 1, 2, 1],
-      attack: 0.1,
-      velocity: -40
-    };
-
-    this.zombie = new Veggies.Zombie(this, 450, 224, zombieData);
-    this.zombies.add(this.zombie);
-
-
-    var plantData = {
-      plantAsset: 'plant',
-      health: 10,
-      isShooter: true,
-      //isSunProducer: true,
-      animationFrames: [1, 2, 1, 0]
-    };
-
-    this.plant = new Veggies.Plant(this, 100, 124, plantData);
-    this.plants.add(this.plant);
 
     this.sunGenerationTimer = this.game.time.create(false);
     this.sunGenerationTimer.start();
@@ -70,17 +52,20 @@ Veggies.GameState = {
     this.scheduleEnemyGeneration();
   },
   update: function() {
-    this.game.physics.arcade.collide(this.plants, this.zombies, this.attackPlant, null, this);
-    this.game.physics.arcade.collide(this.bullets, this.zombies, this.hitZombie, null, this);
+    this.game.physics.arcade.collide(this.Arts, this.enemys, this.attackArt, null, this);
+    this.game.physics.arcade.collide(this.bullets, this.enemys, this.hitenemy, null, this);
 
-    
+    if(this.enemyCount == this.levelData.enemys.length ){
+        //this.state.add('Game', {currentLevel: this.levelData.nextLevel})
+        this.state.start('Game', {currentLevel: 'level2'});
+    }    
 
-    this.zombies.forEachAlive(function(zombie){
-      //zombies need to keep their speed
-      zombie.body.velocity.x = zombie.defaultVelocity;
-
+    this.enemys.forEachAlive(function(enemy){
+      //enemys need to keep their speed
+      enemy.body.velocity.x = enemy.defaultVelocity;
+        
       //if one of them reaches the house, it's game over
-      if(zombie.x <= this.HOUSE_X) {
+      if(enemy.x <= this.HOUSE_X) {
         this.gameOver();
       }
     }, this);
@@ -88,15 +73,15 @@ Veggies.GameState = {
   gameOver: function() {
     this.game.state.start('Game');
   },
-  attackPlant: function(plant, zombie) {
-    plant.damage(zombie.attack);
+  attackArt: function(Art, enemy) {
+    Art.damage(enemy.attack);
 },
-createZombie: function(x, y, data) {
-    var newElement = this.zombies.getFirstDead();
+createenemy: function(x, y, data) {
+    var newElement = this.enemys.getFirstDead();
 
     if(!newElement) {
-        newElement = new Veggies.Zombie(this, x, y, data);
-        this.zombies.add(newElement);
+        newElement = new Game.enemy(this, x, y, data);
+        this.enemys.add(newElement);
     }
     else {
         newElement.reset(x ,y , data);
@@ -104,12 +89,12 @@ createZombie: function(x, y, data) {
 
     return newElement;
 },
-createPlant: function(x, y, data) {
-    var newElement = this.zombies.getFirstDead();
+createArt: function(x, y, data) {
+    var newElement = this.enemys.getFirstDead();
 
     if(!newElement) {
-        newElement = new Veggies.Plant(this, x, y, data);
-        this.plants.add(newElement);
+        newElement = new Game.Art(this, x, y, data);
+        this.Arts.add(newElement);
     }
     else {
         newElement.reset(x ,y , data);
@@ -139,10 +124,10 @@ createGui: function() {
         this.buttons.add(button);
 
         //pass the data to the button
-        button.plantData = element;
+        button.ArtData = element;
     }, this);
 
-    this.plantLabel = this.add.text(300, this.game.height - 28, '', style);
+    this.ArtLabel = this.add.text(300, this.game.height - 28, '', style);
 },
 updateStats: function() {
     this.sunLabel.text = this.numSuns;
@@ -154,7 +139,8 @@ increaseSun: function(amount) {
 //Cada x temps es genera un sol i es torna a cridar a la mateixa funcio
 scheduleSunGeneration: function() {
     this.sunGenerationTimer.add(Phaser.Timer.SECOND * this.SUN_FREQUENCY, function() {
-        this.generateRandomSun();
+        if(this.enemyCount <= this.levelData.enemys.length - 1)
+            this.generateRandomSun();
         this.scheduleSunGeneration();
     }, this);
 },
@@ -178,7 +164,6 @@ generateRandomEnemy: function(){
     var fila = 1 + 5 * Math.random();
     fila = Math.round(fila);
     var y = 0;
-    console.log(fila);
     //De forma aleatoria s'escull en quina fila esta l'enemic, i segons la fila la y canvia
     switch (fila) {
         case 1:
@@ -200,22 +185,18 @@ generateRandomEnemy: function(){
             y = 224;
             break;
     }
-    //TODO: Canviar enemic diferent
-    var zombieData = {
-        asset: 'zombie',
-        health: 2,
-        animationFrames: [0, 1, 2, 1],
-        attack: 0.1,
-        velocity: -40
-      };
+    var enemyData;
 
-    var enemy = this.createZombie(x,y,zombieData);
+    enemyData = this.levelData.enemys[this.enemyCount];
+    this.enemyCount ++;
+
+    var enemy = this.createenemy(x,y,enemyData);
 },
 createSun: function(x, y) {
     var newElement = this.suns.getFirstDead();
 
     if(!newElement) {
-        newElement = new Veggies.Sun(this, x, y);
+        newElement = new Game.Sun(this, x, y);
         this.suns.add(newElement);
     }
     else {
@@ -224,28 +205,28 @@ createSun: function(x, y) {
 
     return newElement;
 },
-hitZombie: function(bullet, zombie) {
+hitenemy: function(bullet, enemy) {
     bullet.kill();
-    zombie.damage(1);
+    enemy.damage(1);
     this.hitSound.play();
 },
 clickButton: function(button) {
     if(!button.selected) {
         this.clearSelection();
-        this.plantLabel.text = 'Cost: ' + button.plantData.cost;
+        this.ArtLabel.text = 'Cost: ' + button.ArtData.cost;
         button.selected = true;
         button.alpha = 0.5;
 
-        //check if you can afford the plant
-        if(this.numSuns >= button.plantData.cost) {
-            this.plantLabel.fill = "white";
+        //check if you can afford the Art
+        if(this.numSuns >= button.ArtData.cost) {
+            this.ArtLabel.fill = "white";
 
-            this.currentSelection = button.plantData;
+            this.currentSelection = button.ArtData;
 
-            this.currentCost = button.plantData.cost;
+            this.currentCost = button.ArtData.cost;
         }
         else {
-            this.plantLabel.fill = "red";
+            this.ArtLabel.fill = "red";
         }
     }
     else {
@@ -253,7 +234,7 @@ clickButton: function(button) {
     }
 },
 clearSelection: function() {
-    this.plantLabel.text = '';
+    this.ArtLabel.text = '';
     this.currentSelection = null;
     this.currentCost = null;
 
@@ -284,16 +265,15 @@ createLandPatches: function() {
             patch.posX = 64 + i * 40;
             patch.posY = 24 + j * 50;
 
-            //plant something if the patch is available and a plant is selected
+            //Art something if the patch is available and a Art is selected
             patch.inputEnabled = true;
-            patch.events.onInputDown.add(this.plantPlant, this);
+            patch.events.onInputDown.add(this.paintArt, this);
         }
     }
 },
-plantPlant: function(patch) {
-    console.log(patch.posY);
+paintArt: function(patch) {
     if (this.currentSelection != null && this.numSuns >= this.currentCost){
-        this.createPlant(patch.posX,patch.posY,this.currentSelection);
+        this.createArt(patch.posX,patch.posY,this.currentSelection);
         this.numSuns -= this.currentCost;
         this.updateStats();
         this.clearSelection();

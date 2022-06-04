@@ -1,6 +1,6 @@
-var Veggies = Veggies || {};
+var Game = Game || {};
 
-Veggies.Sun = function(state, x, y) {
+Game.Sun = function(state, x, y) {
     Phaser.Sprite.call(this, state.game, x, y, 'sun');
 
     this.state = state;
@@ -25,10 +25,10 @@ Veggies.Sun = function(state, x, y) {
     this.reset(x, y);
 };
 
-Veggies.Sun.prototype = Object.create(Phaser.Sprite.prototype);
-Veggies.Sun.prototype.constructor = Veggies.Sun;
+Game.Sun.prototype = Object.create(Phaser.Sprite.prototype);
+Game.Sun.prototype.constructor = Game.Sun;
 
-Veggies.Sun.prototype.scheduleExpiration = function() {
+Game.Sun.prototype.scheduleExpiration = function() {
     this.sunExpirationTimer.start();
 
     var expirationTime = 2 + Math.random() * 4;
@@ -38,12 +38,12 @@ Veggies.Sun.prototype.scheduleExpiration = function() {
     }, this);
 };
 
-Veggies.Sun.prototype.kill = function() {
+Game.Sun.prototype.kill = function() {
     Phaser.Sprite.prototype.kill.call(this);
     this.sunExpirationTimer.stop();
 }
 
-Veggies.Sun.prototype.reset = function(x, y) {
+Game.Sun.prototype.reset = function(x, y) {
     Phaser.Sprite.prototype.reset.call(this, x, y);
 
     this.scheduleExpiration();

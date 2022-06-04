@@ -1,9 +1,9 @@
 {
   "nextLevel": "level1",
-  "zombies": [
+  "enemys": [
     {
       "time": 1,
-      "asset": "zombie",
+      "asset": "enemy",
       "health": 10,
       "animationFrames": [0, 1, 2, 1],
       "attack": 0.1,
@@ -11,7 +11,7 @@
     },
     {
       "time": 1.1,
-      "asset": "zombie",
+      "asset": "enemy",
       "health": 10,
       "animationFrames": [0, 1, 2, 1],
       "attack": 0.1,
@@ -19,7 +19,7 @@
     },
     {
       "time": 2,
-      "asset": "zombie",
+      "asset": "enemy",
       "health": 10,
       "animationFrames": [0, 1, 2, 1],
       "attack": 0.1,
@@ -27,7 +27,7 @@
     },
     {
       "time": 3,
-      "asset": "zombie",
+      "asset": "enemy",
       "health": 10,
       "animationFrames": [0, 1, 2, 1],
       "attack": 0.1,
@@ -43,7 +43,7 @@
     },
     {
       "time": 5,
-      "asset": "zombie",
+      "asset": "enemy",
       "health": 10,
       "animationFrames": [0, 1, 2, 1],
       "attack": 0.1,
@@ -51,7 +51,7 @@
     },
     {
       "time": 5.1,
-      "asset": "zombie",
+      "asset": "enemy",
       "health": 10,
       "animationFrames": [0, 1, 2, 1],
       "attack": 0.1,
@@ -59,7 +59,7 @@
     },
     {
       "time": 5.2,
-      "asset": "zombie",
+      "asset": "enemy",
       "health": 10,
       "animationFrames": [0, 1, 2, 1],
       "attack": 0.1,
@@ -67,7 +67,7 @@
     },
     {
       "time": 6,
-      "asset": "zombie",
+      "asset": "enemy",
       "health": 10,
       "animationFrames": [0, 1, 2, 1],
       "attack": 0.1,

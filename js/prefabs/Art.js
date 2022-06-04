@@ -1,7 +1,7 @@
-var Veggies = Veggies || {};
+var Game = Game || {};
 
-Veggies.Plant = function(state, x, y, data) {
-  Phaser.Sprite.call(this, state.game, x, y, data.plantAsset);
+Game.Art = function(state, x, y, data) {
+  Phaser.Sprite.call(this, state.game, x, y, data.artAsset);
 
   this.state = state;
   this.game = state.game;
@@ -21,18 +21,18 @@ Veggies.Plant = function(state, x, y, data) {
   this.reset(x, y, data);
 };
 
-Veggies.Plant.prototype = Object.create(Phaser.Sprite.prototype);
-Veggies.Plant.prototype.constructor = Veggies.Plant;
+Game.Art.prototype = Object.create(Phaser.Sprite.prototype);
+Game.Art.prototype.constructor = Game.Art;
 
-Veggies.Plant.prototype.reset = function(x, y, data){
+Game.Art.prototype.reset = function(x, y, data){
   Phaser.Sprite.prototype.reset.call(this, x, y, data.health);
 
-  //change the image of the plant
-  this.loadTexture(data.plantAsset);
+  //change the image of the Art
+  this.loadTexture(data.artAsset);
 
   this.animationName = null;
   if(data.animationFrames) {
-    this.animationName = data.plantAsset + 'Anim';
+    this.animationName = data.artAsset + 'Anim';
     this.animations.add(this.animationName, data.animationFrames, 6, false);
     this.play(this.animationName);
   }
@@ -51,28 +51,28 @@ Veggies.Plant.prototype.reset = function(x, y, data){
   }
 };
 
-Veggies.Plant.prototype.kill = function() {
+Game.Art.prototype.kill = function() {
     Phaser.Sprite.prototype.kill.call(this);
 
     this.shootingTimer.stop();
     this.producingTimer.stop();
 };
 
-Veggies.Plant.prototype.scheduleShooting = function() {
+Game.Art.prototype.scheduleShooting = function() {
     this.shoot();
 
-    //plants shoot once per second
+    //Arts shoot once per second
     this.shootingTimer.add(Phaser.Timer.SECOND, this.scheduleShooting, this);
 };
 
-Veggies.Plant.prototype.scheduleProduction = function() {
+Game.Art.prototype.scheduleProduction = function() {
     this.produceSun();
 
-    //plants shoot once per second
+    //Arts shoot once per second
     this.producingTimer.add(Phaser.Timer.SECOND * 5, this.scheduleProduction, this);
 };
 
-Veggies.Plant.prototype.shoot = function() {
+Game.Art.prototype.shoot = function() {
     //play shooting animation
     if(this.animations.getAnimation(this.animationName)) {
         this.play(this.animationName);
@@ -83,7 +83,7 @@ Veggies.Plant.prototype.shoot = function() {
     var newElement = this.bullets.getFirstDead();
 
     if(!newElement) {
-        newElement = new Veggies.Bullet(this, this.x, y);
+        newElement = new Game.Bullet(this, this.x, y);
         this.bullets.add(newElement);
     }
     else {
@@ -93,7 +93,7 @@ Veggies.Plant.prototype.shoot = function() {
     newElement.body.velocity.x = 100;
 };
 
-Veggies.Plant.prototype.produceSun = function() {
+Game.Art.prototype.produceSun = function() {
     var diffX = -40 + Math.random() * 80;
     var diffY = -40 + Math.random() * 80;
 

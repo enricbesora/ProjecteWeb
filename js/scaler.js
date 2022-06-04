@@ -1,8 +1,8 @@
-var Veggies = Veggies || {};
+var Game = Game || {};
 
 //calculate the dimensions of the game so that 100% of the screen is used
 
-Veggies.getGameLandscapeDimensions = function (max_w, max_h) {
+Game.getGameLandscapeDimensions = function (max_w, max_h) {
     //get both w and h of the screen
     var w = window.innerWidth * window.devicePixelRatio;
     var h = window.innerHeight * window.devicePixelRatio;

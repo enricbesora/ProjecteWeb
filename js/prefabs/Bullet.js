@@ -1,6 +1,6 @@
-var Veggies = Veggies || {};
+var Game = Game || {};
 
-Veggies.Bullet = function(state, x, y) {
+Game.Bullet = function(state, x, y) {
     Phaser.Sprite.call(this, state.game, x, y, 'bullet');
 
     this.state = state;
@@ -10,10 +10,10 @@ Veggies.Bullet = function(state, x, y) {
     this.body.velocity.x = 100;
 };
 
-Veggies.Bullet.prototype = Object.create(Phaser.Sprite.prototype);
-Veggies.Bullet.prototype.construtor = Veggies.Bullet;
+Game.Bullet.prototype = Object.create(Phaser.Sprite.prototype);
+Game.Bullet.prototype.construtor = Game.Bullet;
 
-Veggies.Bullet.prototype.update = function() {
+Game.Bullet.prototype.update = function() {
     //kill bullets that leave the screen
     if(this.x >= this.game.width) {
         this.kill();

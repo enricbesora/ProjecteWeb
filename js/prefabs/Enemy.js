@@ -1,6 +1,6 @@
-var Veggies = Veggies || {};
+var Game = Game || {};
 
-Veggies.Zombie = function(state, x, y, data) {
+Game.enemy = function(state, x, y, data) {
   Phaser.Sprite.call(this, state.game, x, y, data.asset);
 
   this.state = state;
@@ -13,13 +13,13 @@ Veggies.Zombie = function(state, x, y, data) {
   this.reset(x, y, data);
 };
 
-Veggies.Zombie.prototype = Object.create(Phaser.Sprite.prototype);
-Veggies.Zombie.prototype.constructor = Veggies.Zombie;
+Game.enemy.prototype = Object.create(Phaser.Sprite.prototype);
+Game.enemy.prototype.constructor = Game.enemy;
 
-Veggies.Zombie.prototype.reset = function(x, y, data) {
+Game.enemy.prototype.reset = function(x, y, data) {
   Phaser.Sprite.prototype.reset.call(this, x, y, data.health);
 
-  //change the image of the plant
+  //change the image of the Art
   this.loadTexture(data.asset);
 
   //create an animation if any was passed
@@ -37,7 +37,7 @@ Veggies.Zombie.prototype.reset = function(x, y, data) {
 
 };
 
-Veggies.Zombie.prototype.damage = function(amount) {
+Game.enemy.prototype.damage = function(amount) {
     Phaser.Sprite.prototype.damage.call(this, amount);
 
     var emitter = this.game.add.emitter(this.x, this.y, 50);

@@ -1,6 +1,6 @@
-var Veggies = Veggies || {};
+var Game = Game || {};
 
-Veggies.BootState = {
+Game.BootState = {
     init: function() {
         this.game.stage.backgroundColor = '#fff';
 

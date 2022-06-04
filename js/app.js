@@ -1,9 +1,9 @@
-var Veggies = Veggies || {};
+var Game = Game || {};
 
-Veggies.game = new Phaser.Game(480, 320, Phaser.AUTO);
+Game.game = new Phaser.Game(480, 320, Phaser.AUTO);
 
-Veggies.game.state.add('Boot', Veggies.BootState);
-Veggies.game.state.add('Preload', Veggies.PreloadState);
-Veggies.game.state.add('Game', Veggies.GameState);
+Game.game.state.add('Boot', Game.BootState);
+Game.game.state.add('Preload', Game.PreloadState);
+Game.game.state.add('Game', Game.GameState);
 
-Veggies.game.state.start('Boot');
+Game.game.state.start('Boot');
